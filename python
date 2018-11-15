@@ -1,0 +1,58 @@
+import serial
+import time
+
+ser = serial.Serial('COM11', 9600)
+
+command = {'a': 'led on_255',
+           'b': 'led on_192',
+           'c': 'led on_129',
+           'd': 'led on_66',
+           'e': 'led off',
+           'f': 'get photo val'}
+
+def wait_for_data(ser):
+    timeout = 0
+    while not ser.in_waiting and timeout < 1:
+        time.sleep(0.01)
+        timeout += 0.01
+def start_interactive_mode(ser):
+    while True:
+        command = input("Enter command: ")
+        ser.write(bytes(command, 'utf8'))
+        while ser.in_waiting:
+            line = ser.readline()
+            line = line.decode('utf8')
+            line = line.strip() 
+            print(line)
+
+def start_light_managing(ser):
+    while True:
+        command = 'f'
+        ser.write(bytes(command, 'utf8'))
+        while ser.in_waiting:
+            number = ser.readline()
+            number = number.decode('utf8')
+            number = number.strip()
+            if number  != ' ':
+                number = int(number)
+                print(number)
+                if number >= 600 :
+                    if number > 800:
+                        command = 'e'
+                    else:
+                        command = 'd'
+                else:
+                    if number >= 400:
+                        command = 'c'
+                    else:
+                        if number >= 200:        
+                            command = 'b'
+                        else:
+                            command = 'a'
+                ser.write(bytes(command, 'utf8'))
+                wait_for_data(ser)
+                
+
+#start_interactive_mode(ser)
+start_light_managing(ser)
+ser.close()
