@@ -1,0 +1,34 @@
+int pin=3;
+int ph_pin=A0;
+
+void setup(){
+  pinMode(pin, OUTPUT);
+  pinMode(ph_pin, INPUT);
+  Serial.begin(9600); 
+}
+
+void loop() {
+  while (Serial.available()>0){
+    char command=Serial.read();
+    if (command == 'a')
+      analogWrite(pin, 255);
+    else 
+      if (command == 'b')
+        analogWrite(pin, 192);
+      else 
+        if(command == 'c')
+          analogWrite(pin, 129);
+        else
+          if (command == 'd')
+            analogWrite(pin, 66);
+          else
+            if (command == 'e')
+              analogWrite(pin, 0);
+            else
+            {
+              int val = analogRead(ph_pin);
+              Serial.println(val);
+            }
+      
+   }
+}
